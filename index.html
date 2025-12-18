@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simulasi Register Surat Desa</title>
+  <meta name="theme-color" content="#111827">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">SR</div>
+      <div>
+        <div class="title">Simulasi Register Surat</div>
+        <div class="subtitle">Nomor urut per klasifikasi • tersimpan lokal (offline)</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="btnExport" class="btn secondary">Export JSON</button>
+      <label class="btn secondary file">
+        Import JSON
+        <input id="fileImport" type="file" accept="application/json" hidden>
+      </label>
+      <button id="btnReset" class="btn danger">Reset Data</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="cardHead">
+        <h2>Buat Data Baru</h2>
+        <div class="pill" id="storagePill">Menyimpan lokal</div>
+      </div>
+
+      <form id="letterForm" class="grid">
+        <div class="field">
+          <label>Klasifikasi</label>
+          <select id="classification" required>
+            <option value="OUTGOING">Surat Keluar</option>
+            <option value="CERTIFICATE">Surat Keterangan (Pelayanan)</option>
+          </select>
+          <div class="hint">Nomor urut terpisah untuk setiap klasifikasi.</div>
+        </div>
+
+        <div class="field">
+          <label>Tanggal Surat</label>
+          <input id="letterDate" type="date" required />
+          <div class="hint">Tahun diambil dari tanggal surat (reset counter otomatis per tahun).</div>
+        </div>
+
+        <div class="field span2">
+          <label>Perihal / Keterangan Singkat</label>
+          <input id="subject" type="text" maxlength="120" placeholder="Contoh: Undangan rapat / Keterangan domisili" required />
+        </div>
+
+        <div class="field span2">
+          <label>Nama / Tujuan (opsional)</label>
+          <input id="party" type="text" maxlength="120" placeholder="Contoh: Kecamatan / Nama Warga" />
+        </div>
+
+        <div class="field span2 row">
+          <button class="btn primary" type="submit">Simpan & Buat Nomor</button>
+          <div class="preview">
+            <div class="previewLabel">Preview format:</div>
+            <div class="previewValue" id="previewNo">—</div>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <div class="cardHead">
+        <h2>Data Surat</h2>
+        <div class="filters">
+          <select id="filterClass">
+            <option value="ALL">Semua</option>
+            <option value="OUTGOING">Surat Keluar</option>
+            <option value="CERTIFICATE">Surat Keterangan</option>
+          </select>
+          <input id="filterYear" type="number" min="2000" max="2100" placeholder="Tahun (mis. 2025)">
+          <input id="search" type="search" placeholder="Cari nomor/perihal/nama…" />
+        </div>
+      </div>
+
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Register</th>
+              <th>Tanggal</th>
+              <th>Klasifikasi</th>
+              <th>Perihal</th>
+              <th>Nama/Tujuan</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="footerRow">
+        <div id="stats" class="muted">—</div>
+        <div class="muted">Tip: Install di Android via Chrome → menu ⋮ → <b>Tambahkan ke layar utama</b>.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="cardHead">
+        <h2>Counter Saat Ini</h2>
+        <div class="muted">Berguna untuk cek “nomor terakhir” per klasifikasi per tahun.</div>
+      </div>
+      <div id="counterGrid" class="counterGrid"></div>
+    </section>
+  </main>
+
+  <dialog id="dlg">
+    <div class="dlgHead">
+      <div class="dlgTitle" id="dlgTitle">Konfirmasi</div>
+      <button class="iconBtn" id="dlgClose" aria-label="Tutup">✕</button>
+    </div>
+    <div class="dlgBody" id="dlgBody"></div>
+    <div class="dlgFoot" id="dlgFoot"></div>
+  </dialog>
+
+  <script src="app.js"></script>
+  <script>
+    // Register service worker (PWA offline)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js');
+      });
+    }
+  </script>
+</body>
+</html>
